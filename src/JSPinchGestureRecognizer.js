@@ -4,20 +4,25 @@ var JSPinchGestureRecognizer = Class.create(JSGestureRecognizer, {
   },
   
   gesturestart: function($super, event) {
-    if (event.targetTouches.length == 2) {
-      $super(event);
+    if (event.target == this.target) {
+      if (event.targetTouches.length == 2) {
+        event.preventDefault();
+        $super(event);
+      }
     }
   },
   
   gesturechange: function(event) {
-    if (this.beganRecognizer == false) {
-      this.fire(this.target, JSGestureRecognizerStateBegan, this);
-      this.beganRecognizer = true;
-    } else {
-      this.fire(this.target, JSGestureRecognizerStateChanged, this);
-      this.scale *= event.scale;
+    if (event.target == this.target) {
+      event.preventDefault();
+      if (this.beganRecognizer == false) {
+        this.fire(this.target, JSGestureRecognizerStateBegan, this);
+        this.beganRecognizer = true;
+      } else {
+        this.fire(this.target, JSGestureRecognizerStateChanged, this);
+        this.scale *= event.scale;
+      }
     }
-    this.stopEvent(event);
   },
   
   reset: function() {

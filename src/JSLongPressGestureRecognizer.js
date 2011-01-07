@@ -9,25 +9,36 @@ var JSLongPressGestureRecognizer = Class.create(JSGestureRecognizer, {
   },
   
   touchstart: function($super, event) {
-    $super(event);
-    if (this.numberOfTouchesRequired == event.targetTouches.length) {
-      this.recognizerTimer = window.setTimeout(function() {
-        this.fire(this.target, JSGestureRecognizerStateRecognized, this);
-      }.bind(this), this.minimumPressDuration);
+    if (event.target == this.target) {
+      event.preventDefault();
+      $super(event);
+      if (this.numberOfTouchesRequired == event.targetTouches.length) {
+        this.recognizerTimer = window.setTimeout(function() {
+          this.fire(this.target, JSGestureRecognizerStateRecognized, this);
+        }.bind(this), this.minimumPressDuration);
+      }
     }
-    Event.stop(event);
   },
   
   touchmove: function(event) {
-    this.fire(this.target, JSGestureRecognizerStateFailed, this);
+    if (event.target == this.target) {
+      event.preventDefault();
+      this.fire(this.target, JSGestureRecognizerStateFailed, this);
+    }
   },
   
   touchend: function(event) {
-    this.fire(this.target, JSGestureRecognizerStateFailed, this);
+    if (event.target == this.target) {
+      event.preventDefault();
+      this.fire(this.target, JSGestureRecognizerStateFailed, this);
+    }
   },
   
   gesturestart: function(event) {
-    this.fire(this.target, JSGestureRecognizerStateFailed);
+    if (event.target == this.target) {
+      event.preventDefault();
+      this.fire(this.target, JSGestureRecognizerStateFailed);
+    }
   },
   
   reset: function() {

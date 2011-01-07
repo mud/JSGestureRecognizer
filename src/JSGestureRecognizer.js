@@ -83,7 +83,7 @@ var JSGestureRecognizer = Class.create({
   
   // -- Touch Events ----------------------------------------------------------
   touchstart: function(event) {
-    if (this.target) {
+    if (this.target && event.target == this.target) {
       this.addObservers();
       this.fire(this.target, JSGestureRecognizerStatePossible);
     }
@@ -96,7 +96,7 @@ var JSGestureRecognizer = Class.create({
   
   // -- Gesture Events --------------------------------------------------------
   gesturestart: function(event) {
-    if (this.target) {
+    if (this.target && event.target == this.target) {
       this.addGestureObservers();
       this.fire(this.target, JSGestureRecognizerStatePossible);
     }
@@ -104,7 +104,9 @@ var JSGestureRecognizer = Class.create({
   
   gesturechange: function(event) {},
   gestureend: function(event) {
-    this.fire(this.target, JSGestureRecognizerStateEnded, this);
+    if (this.target && event.target == this.target) {
+      this.fire(this.target, JSGestureRecognizerStateEnded, this);
+    }
   },
   
   
@@ -207,13 +209,9 @@ var JSGestureRecognizer = Class.create({
     target.stopObserving(eventName, handler);
   },
   
-  stopEvent: function(event) {
-    Event.stop(event);
-  },
-  
   getEventPoint: function(event) {
     if (Prototype.Browser.MobileSafari)
-      return { x: event.targetTouches[0].clientX, y: event.targetTouches[0].clientY };
+      return { x: event.targetTouches[0].pageX, y: event.targetTouches[0].pageY };
     return Event.pointer(event);
   }
 });

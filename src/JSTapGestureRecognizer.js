@@ -7,33 +7,40 @@ var JSTapGestureRecognizer = Class.create(JSGestureRecognizer, {
   },
   
   touchstart: function($super, event) {
-    $super(event);
-    this.numberOfTouches = event.targetTouches.length;
-    this.stopEvent(event);
+    if (event.target == this.target) {
+      event.preventDefault();
+      $super(event);
+      this.numberOfTouches = event.targetTouches.length;
+    }
   },
   
   touchmove: function(event) {
-    this.removeObservers();
-    this.fire(this.target, JSGestureRecognizerStateFailed, this);
+    if (event.target == this.target) {
+      event.preventDefault();
+      this.removeObservers();
+      this.fire(this.target, JSGestureRecognizerStateFailed, this);
+    }
   },
   
   touchend: function($super, event) {
-    if (this.numberOfTouches == this.numberOfTouchesRequired) {
-      $super(event);
-      this.taps++;
-      if (this.recognizerTimer) {
-        window.clearTimeout(this.recognizerTimer);
-        this.recognizerTimer = null;
-      }
-      this.recognizerTimer = window.setTimeout(function() {
-        if (this.taps == this.numberOfTapsRequired) {
-          this.fire(this.target, JSGestureRecognizerStateRecognized, this);
-        } else {
-          this.fire(this.target, JSGestureRecognizerStateFailed, this);
+    if (event.target == this.target) {
+      if (this.numberOfTouches == this.numberOfTouchesRequired) {
+        $super(event);
+        this.taps++;
+        if (this.recognizerTimer) {
+          window.clearTimeout(this.recognizerTimer);
+          this.recognizerTimer = null;
         }
-      }.bind(this), JSTapGestureRecognizer.TapTimeout);
-    } else {
-      this.fire(this.target, JSGestureRecognizerStateFailed, this);
+        this.recognizerTimer = window.setTimeout(function() {
+          if (this.taps == this.numberOfTapsRequired) {
+            this.fire(this.target, JSGestureRecognizerStateRecognized, this);
+          } else {
+            this.fire(this.target, JSGestureRecognizerStateFailed, this);
+          }
+        }.bind(this), JSTapGestureRecognizer.TapTimeout);
+      } else {
+        this.fire(this.target, JSGestureRecognizerStateFailed, this);
+      }
     }
   },
   
