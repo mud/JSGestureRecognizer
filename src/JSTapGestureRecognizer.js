@@ -1,4 +1,4 @@
-var JSTapGestureRecognizer = Class.create(JSGestureRecognizer, {
+var JSTapGestureRecognizer = JSGestureRecognizer.extend({
   numberOfTapsRequired:    1,
   numberOfTouchesRequired: 1,
   
@@ -6,10 +6,10 @@ var JSTapGestureRecognizer = Class.create(JSGestureRecognizer, {
     return "JSTapGestureRecognizer";
   },
   
-  touchstart: function($super, event) {
+  touchstart: function(event) {
     if (event.target == this.target) {
       event.preventDefault();
-      $super(event);
+      this._super(event);
       this.numberOfTouches = event.targetTouches.length;
     }
   },
@@ -22,10 +22,10 @@ var JSTapGestureRecognizer = Class.create(JSGestureRecognizer, {
     }
   },
   
-  touchend: function($super, event) {
+  touchend: function(event) {
     if (event.target == this.target) {
       if (this.numberOfTouches == this.numberOfTouchesRequired) {
-        $super(event);
+        this._super(event);
         this.taps++;
         if (this.recognizerTimer) {
           window.clearTimeout(this.recognizerTimer);
@@ -50,6 +50,4 @@ var JSTapGestureRecognizer = Class.create(JSGestureRecognizer, {
   }
 });
 
-Object.extend(JSTapGestureRecognizer, {
-  TapTimeout: 500
-});
+JSTapGestureRecognizer.TapTimeout = 500;

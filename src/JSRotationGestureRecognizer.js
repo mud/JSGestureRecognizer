@@ -1,13 +1,13 @@
-var JSRotationGestureRecognizer = Class.create(JSGestureRecognizer, {
+var JSRotationGestureRecognizer = JSGestureRecognizer.extend({
   toString: function() {
     return "JSRotationGestureRecognizer";
   },
   
-  gesturestart: function($super, event) {
+  gesturestart: function(event) {
     if (event.target == this.target) {
       if (event.targetTouches.length == 2) {
         event.preventDefault();
-        $super(event);
+        this._super(event);
       }
     }
   },

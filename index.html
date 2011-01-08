@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="viewport" content="user-scalable=yes" />
 <script src="lib/prototype.js" type="text/javascript"></script>
+<!-- <script src="lib/prototype.js" type="text/javascript"></script> -->
 <script src="dist/gesturerecognizer.js" type="text/javascript"></script>
 
 <link href="http://alexgorbatchev.com/pub/sh/current/styles/shCore.css" rel="stylesheet" type="text/css" />
@@ -226,20 +227,20 @@
     <h2>About</h2>
     <p>
       <strong>JSGestureRecognizer</strong> allows you to add gesture recognizers to DOM objects for Mobile Safari similarly to <a href="http://developer.apple.com/library/ios/#documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/GestureRecognizers/GestureRecognizers.html">UIGestureRecognizer</a> in iOS. I decided to write this because:
-      <blockquote>
-        1. I got sick of writing <tt>touchstart/touchmove/touchend</tt> events to support Mobile Safari<br />
-        2. I didn't see any implementation out there that I liked<br />
-        3. I like how <tt>UIGestureRecognizer</tt> works in iOS and wanted the web to work similarly<br />
-        4. I wanted to be able to easily create my own gestures
-      </blockquote>
     </p>
+    <blockquote>
+      1. I got sick of writing <tt>touchstart/touchmove/touchend</tt> events to support Mobile Safari<br />
+      2. I didn't see any implementation out there that I liked<br />
+      3. I like how <tt>UIGestureRecognizer</tt> works in iOS and wanted the web to work similarly<br />
+      4. I wanted to be able to easily create my own gestures
+    </blockquote>
     <p>
       Just like <tt>UIGestureRecognizer</tt>, there are two steps to enable gestures on a DOM element.
-      <blockquote>
-        1. Create an instance of a gesture recognizer, set its properties and initialize with a callback function.<br />
-        2. Add the gesture recognizer to a DOM element.
-      </blockquote>
     </p>
+    <blockquote>
+      1. Create an instance of a gesture recognizer, set its properties and initialize with a callback function.<br />
+      2. Add the gesture recognizer to a DOM element.
+    </blockquote>
   </section>
   
   <section id="how-to-use">
@@ -276,11 +277,11 @@
     <h3>Callback Function</h3>
     <p>
       In iOS, you specify a target and action for the gesture recognizer. With JSGestureRecognizer, we instead specify a callback function. The callback function is called anytime the JSGestureRecognizer dispatches an event, which strictly follows <a href="http://developer.apple.com/library/ios/#documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/GestureRecognizers/GestureRecognizers.html%23//apple_ref/doc/uid/TP40009541-CH6-SW11">UIGestureRecognizer's action messages</a>. The callback function passes the recognizer instance as an argument, and to handle the callback, you should do what you do similarly to iOS's implementation.
-      <blockquote>
-        1) Check the state of the recognizer (ie. JSGestureRecognizerStateBegan / JSGestureRecognizerStateChanged / JSGestureRecognizerStateEnded).<br />
-        2) Handle updates according to the state of the recognizer. You mostly want to do stuff during JSGestureRecognizerStateChanged / JSGestureRecognizerStateEnded.
-      </blockquote>
     </p>
+    <blockquote>
+      1) Check the state of the recognizer (ie. JSGestureRecognizerStateBegan / JSGestureRecognizerStateChanged / JSGestureRecognizerStateEnded).<br />
+      2) Handle updates according to the state of the recognizer. You mostly want to do stuff during JSGestureRecognizerStateChanged / JSGestureRecognizerStateEnded.
+    </blockquote>
     <h3>Value Accumulation</h3>
     <p>
       I tried to make the behavior of <tt>JSGestureRecognizer</tt> as close to <rr>UIGestureRecognizer</rr> as possible. This means the scale/rotation/translation values accumulate, meaning that if you want to animate scale/rotation/transformation you will have to set the value to 0 (or in case of scale to 1) after every event. The example below does that.

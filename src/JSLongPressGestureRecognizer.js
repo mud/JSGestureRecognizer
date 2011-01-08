@@ -1,4 +1,4 @@
-var JSLongPressGestureRecognizer = Class.create(JSGestureRecognizer, {
+var JSLongPressGestureRecognizer = JSGestureRecognizer.extend({
   minimumPressDuration:    400,
   numberOfTouchesRequired: 1,
   numberOfTapsRequired:    1, // not sure how this works with multiple taps
@@ -8,10 +8,10 @@ var JSLongPressGestureRecognizer = Class.create(JSGestureRecognizer, {
     return "JSLongPressGestureRecognizer";
   },
   
-  touchstart: function($super, event) {
+  touchstart: function(event) {
     if (event.target == this.target) {
       event.preventDefault();
-      $super(event);
+      this._super(event);
       if (this.numberOfTouchesRequired == event.targetTouches.length) {
         this.recognizerTimer = window.setTimeout(function() {
           this.fire(this.target, JSGestureRecognizerStateRecognized, this);

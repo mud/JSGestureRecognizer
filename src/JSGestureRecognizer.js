@@ -1,36 +1,5 @@
-/*  JSGestureRecognizer, Version 1.0
- *  (c) 2011 Takashi Okamoto - BuzaMoto
- *
- *  JSGestureRecognizer is a JavaScript implementation of 
- *  UIGestureRecognizer on iOS
- *
- *  http://developer.apple.com/library/ios/#documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/GestureRecognizers/GestureRecognizers.html
- *--------------------------------------------------------------------------*/
-
-var JSGestureRecognizerStatePossible   = 'JSGestureRecognizer:possible',
-    JSGestureRecognizerStateBegan      = 'JSGestureRecognizer:began',
-    JSGestureRecognizerStateChanged    = 'JSGestureRecognizer:changed',
-    JSGestureRecognizerStateEnded      = 'JSGestureRecognizer:ended',
-    JSGestureRecognizerStateCancelled  = 'JSGestureRecognizer:cancelled',
-    JSGestureRecognizerStateFailed     = 'JSGestureRecognizer:failed',
-    JSGestureRecognizerStateRecognized = JSGestureRecognizerStateEnded;
-
-var JSTouchStart     = 'touchstart',
-    JSTouchMove      = 'touchmove',
-    JSTouchEnd       = 'touchend',
-    JSTouchCancelled = 'touchcancelled',
-    JSGestureStart   = 'gesturestart',
-    JSGestureChange  = 'gesturechange',
-    JSGestureEnd     = 'gestureend';
-
-if (!Prototype.Browser.MobileSafari) {
-    JSTouchStart = 'mousedown';
-    JSTouchMove  = 'mousemove';
-    JSTouchEnd   = 'mouseup';
-}
-
 // -- Abstract Class: JSGestureRecognizer -------------------------------------
-var JSGestureRecognizer = Class.create({
+var JSGestureRecognizer = Class.extend({
   initWithCallback: function(callback) {
     if (typeof callback == 'function') {
       this.callback = callback;
@@ -82,10 +51,10 @@ var JSGestureRecognizer = Class.create({
   
   
   // -- Touch Events ----------------------------------------------------------
-  touchstart: function(event) {
+  touchstart: function(event, obj) {
     if (this.target && event.target == this.target) {
       this.addObservers();
-      this.fire(this.target, JSGestureRecognizerStatePossible);
+      this.fire(this.target, JSGestureRecognizerStatePossible, this);
     }
   },
   
@@ -98,7 +67,7 @@ var JSGestureRecognizer = Class.create({
   gesturestart: function(event) {
     if (this.target && event.target == this.target) {
       this.addGestureObservers();
-      this.fire(this.target, JSGestureRecognizerStatePossible);
+      this.fire(this.target, JSGestureRecognizerStatePossible, this);
     }
   },
   
@@ -111,7 +80,8 @@ var JSGestureRecognizer = Class.create({
   
   
   // -- Event Handlers --------------------------------------------------------
-  possible: function(event) {
+  possible: function(event, memo) {
+    if (!event.memo) event.memo = memo;
     if (event.memo == this) {
       this.state = JSGestureRecognizerStatePossible;
       if (this.callback) {
@@ -120,7 +90,8 @@ var JSGestureRecognizer = Class.create({
     }
   },
   
-  began: function(event) {
+  began: function(event, memo) {
+    if (!event.memo) event.memo = memo;
     if (event.memo == this) {
       this.state = JSGestureRecognizerStateBegan;
       if (this.callback) {
@@ -129,7 +100,8 @@ var JSGestureRecognizer = Class.create({
     }
   },
   
-  ended: function(event) {
+  ended: function(event, memo) {
+    if (!event.memo) event.memo = memo;
     if (event.memo == this) {
       this.state = JSGestureRecognizerStateEnded;
       if (this.callback) {
@@ -141,7 +113,8 @@ var JSGestureRecognizer = Class.create({
     }
   },
   
-  cancelled: function(event) {
+  cancelled: function(event, memo) {
+    if (!event.memo) event.memo = memo;
     if (event.memo == this) {
       this.state = JSGestureRecognizerStateCancelled;
       if (this.callback) {
@@ -153,7 +126,8 @@ var JSGestureRecognizer = Class.create({
     }
   },
   
-  failed: function(event) {
+  failed: function(event, memo) {
+    if (!event.memo) event.memo = memo;
     if (event.memo == this) {
       this.state = JSGestureRecognizerStateFailed;
       if (this.callback) {
@@ -165,7 +139,8 @@ var JSGestureRecognizer = Class.create({
     }
   },
   
-  changed: function(event) {
+  changed: function(event, memo) {
+    if (!event.memo) event.memo = memo;
     if (event.memo == this) {
       this.state = JSGestureRecognizerStateChanged;
       if (this.callback) {
@@ -198,32 +173,38 @@ var JSGestureRecognizer = Class.create({
   // -- Utility methods -------------------------------------------------------
   // make this section library independent
   fire: function(target, eventName, obj) {
-    Event.fire(target, eventName, obj);
+    if (Framework.Prototype) {
+      Event.fire(target, eventName, obj);
+    } else if (Framework.jQuery) {
+      $(target).trigger(eventName, obj);
+    }
   },
   
   observe: function(target, eventName, handler) {
-    target.observe(eventName, handler);
+    if (Framework.Prototype) {
+      target.observe(eventName, handler);
+    } else if (Framework.jQuery) {
+      $(target).bind(eventName, handler);
+    }
   },
   
   stopObserving: function(target, eventName, handler) {
-    target.stopObserving(eventName, handler);
+    if (Framework.Prototype) {
+      target.stopObserving(eventName, handler);
+    } else if (Framework.jQuery) {
+      $(target).unbind(eventName, handler);
+    }
   },
   
   getEventPoint: function(event) {
-    if (Prototype.Browser.MobileSafari)
+    if (MobileSafari)
       return { x: event.targetTouches[0].pageX, y: event.targetTouches[0].pageY };
-    return Event.pointer(event);
+    if (Framework.Prototype) return Event.pointer(event);
+    if (Framework.jQuery) return { x: event.pageX, y: event.pageY };
   }
 });
-$_ = (function() {
-  return {
-    
-  }
-})();
 
 // -- Class Methods -----------------------------------------------------------
-Object.extend(JSGestureRecognizer, {
-  addGestureRecognizer: function(target, gestureRecognizer) {
-    gestureRecognizer.setTarget(target);
-  }
-});
+JSGestureRecognizer.addGestureRecognizer = function(target, gestureRecognizer) {
+  gestureRecognizer.setTarget(target);
+}

@@ -1,4 +1,4 @@
-var JSPanGestureRecognizer = Class.create(JSGestureRecognizer, {
+var JSPanGestureRecognizer = JSGestureRecognizer.extend({
   maximumNumberOfTouches: 100000,
   minimumNumberOfTouches: 1,
   
@@ -6,9 +6,9 @@ var JSPanGestureRecognizer = Class.create(JSGestureRecognizer, {
     return "JSPanGestureRecognizer";
   },
   
-  touchstart: function($super, event) {
+  touchstart: function(event) {
     if (event.target == this.target) {
-      $super(event);
+      this._super(event);
       if (event.targetTouches.length > this.maximumNumberOfTouches ||
           event.targetTouches.length < this.minimumNumberOfTouches) {
         this.touchend(event);
@@ -32,9 +32,9 @@ var JSPanGestureRecognizer = Class.create(JSGestureRecognizer, {
     }
   },
   
-  touchend: function($super, event) {
+  touchend: function(event) {
     if (event.target == this.target) {
-      $super(event);
+      this._super(event);
       if (this.beganRecognizer) {
         this.fire(this.target, JSGestureRecognizerStateEnded, this);
       } else {

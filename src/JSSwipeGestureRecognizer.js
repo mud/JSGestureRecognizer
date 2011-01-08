@@ -1,9 +1,4 @@
-var JSSwipeGestureRecognizerDirectionRight = 1 << 0,
-    JSSwipeGestureRecognizerDirectionLeft  = 1 << 1,
-    JSSwipeGestureRecognizerDirectionUp    = 1 << 2,
-    JSSwipeGestureRecognizerDirectionDown  = 1 << 3;
-
-var JSSwipeGestureRecognizer = Class.create(JSGestureRecognizer, {
+var JSSwipeGestureRecognizer = JSGestureRecognizer.extend({
   numberOfTouchesRequired: 1,
   direction:               JSSwipeGestureRecognizerDirectionRight,
   
@@ -11,11 +6,11 @@ var JSSwipeGestureRecognizer = Class.create(JSGestureRecognizer, {
     return "JSSwipeGestureRecognizer";
   },
   
-  touchstart: function($super, event) {
+  touchstart: function(event) {
     if (event.target == this.target) {
       if (this.numberOfTouchesRequired == event.targetTouches.length) {
         event.preventDefault();
-        $super(event);
+        this._super(event);
         this.startingPos = { x: event.targetTouches[0].pageX, y: event.targetTouches[0].pageY };
         this.distance = { x: 0, y: 0 };
       } else {

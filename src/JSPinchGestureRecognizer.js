@@ -1,13 +1,13 @@
-var JSPinchGestureRecognizer = Class.create(JSGestureRecognizer, {
+var JSPinchGestureRecognizer = JSGestureRecognizer.extend({
   toString: function() {
     return "JSPinchGestureRecognizer";
   },
   
-  gesturestart: function($super, event) {
+  gesturestart: function(event) {
     if (event.target == this.target) {
       if (event.targetTouches.length == 2) {
         event.preventDefault();
-        $super(event);
+        this._super(event);
       }
     }
   },
