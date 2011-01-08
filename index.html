@@ -246,11 +246,12 @@
   <section id="how-to-use">
     <h2>How to use</h2>
     <p>
-      Of course the initention is to make this library independent, but I was lazy so currently there's a dependence on <a href="http://prototypejs.org">Prototype.js</a>. Worry not, I'll take the independence out soon!
+      Of course the initention is to make this library independent, but this relies heavily on custom events and I didn't want to implement another event handling system. For now we require either Prototype.js or jQuery.
     </p>
-    <p><a href="http://github.com/mud/jsgesturerecognizer">Download</a> the newest version of JSGestureRecognizer from Github, and include prototype.js and gesturerecognizer.js on your page:
+    <p><a href="http://github.com/mud/jsgesturerecognizer">Download</a> the newest version of JSGestureRecognizer from Github, and include prototype.js or jquery.js and gesturerecognizer.js on your page:
       <script type="syntaxhighlighter" class="brush: xml"><![CDATA[
         &lt;script src="lib/prototype.js" type="text/javascript"&gt;&lt;/script&gt;
+        &lt;!--&lt;script src="lib/jquery.js" type="text/javascript"&gt;&lt;/script&gt;--&gt;
         &lt;script src="dist/gesturerecognizer.js" type="text/javascript"&gt;&lt;/script&gt;
       ]]></script>
     </p>
