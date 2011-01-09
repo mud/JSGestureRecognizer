@@ -25,6 +25,11 @@ var JSRotationGestureRecognizer = JSGestureRecognizer.extend({
     }
   },
   
+  // seems like if this isn't included jQuery doesn't run gestureend
+  gestureend: function(event) {
+    this._super(event);
+  },
+  
   reset: function() {
     this.beganRecognizer = false;
     this.rotation = 0;

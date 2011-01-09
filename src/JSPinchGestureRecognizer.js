@@ -25,6 +25,11 @@ var JSPinchGestureRecognizer = JSGestureRecognizer.extend({
     }
   },
   
+  // seems like if this isn't included jQuery doesn't run gestureend
+  gestureend: function(event) {
+    this._super(event);
+  },
+  
   reset: function() {
     this.beganRecognizer = false;
     this.scale = 1;
