@@ -20,6 +20,7 @@ var JSPinchGestureRecognizer = JSGestureRecognizer.extend({
         this.beganRecognizer = true;
       } else {
         this.fire(this.target, JSGestureRecognizerStateChanged, this);
+        this.velocity = event.scale / this.scale;
         this.scale *= event.scale;
       }
     }

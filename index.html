@@ -51,7 +51,7 @@
 
       var press = new JSLongPressGestureRecognizer();
       press.initWithCallback(function(sender) {
-        if (sender.state == JSGestureRecognizerStateEnded) {
+        if (sender.state == JSGestureRecognizerStateRecognized) {
           alert('Long Pressed!')
         }
       });
@@ -231,15 +231,15 @@
     <blockquote>
       1. I got sick of writing <tt>touchstart/touchmove/touchend</tt> events to support Mobile Safari<br />
       2. I didn't see any implementation out there that I liked<br />
-      3. I like how <tt>UIGestureRecognizer</tt> works in iOS and wanted the web to work similarly<br />
-      4. I wanted to be able to easily create my own gestures
+      3. I like how <tt>UIGestureRecognizer</tt> works in iOS and wanted to handle gestures on Mobile Safari similarly<br />
+      4. I wanted to easily create my own gestures
     </blockquote>
     <p>
       Just like <tt>UIGestureRecognizer</tt>, there are two steps to enable gestures on a DOM element.
     </p>
     <blockquote>
       1. Create an instance of a gesture recognizer, set its properties and initialize with a callback function.<br />
-      2. Add the gesture recognizer to a DOM element.
+      2. Attach the gesture recognizer to a DOM element.
     </blockquote>
   </section>
   
@@ -256,7 +256,7 @@
       ]]></script>
     </p>
     <p>
-      Create an instance of a JSGestureRecognizer, set up optional properties and initialize with a callback function. For example, create a new Tap Gesture:
+      Create an instance of a JSGestureRecognizer, set up optional properties and initialize with a callback function. For example, to create a new Tap Gesture:
       <script type="syntaxhighlighter" class="brush: js"><![CDATA[
         // create new instance of JSTapGestureRecognizer
         var tap = new JSTapGestureRecognizer();
@@ -285,7 +285,7 @@
     </blockquote>
     <h3>Value Accumulation</h3>
     <p>
-      I tried to make the behavior of <tt>JSGestureRecognizer</tt> as close to <rr>UIGestureRecognizer</rr> as possible. This means the scale/rotation/translation values accumulate, meaning that if you want to animate scale/rotation/transformation you will have to set the value to 0 (or in case of scale to 1) after every event. The example below does that.
+      I tried to make the behavior of <tt>JSGestureRecognizer</tt> as close to <rr>UIGestureRecognizer</rr> as possible. This means the scale/rotation/translation values accumulate, meaning that if you want to animate scale/rotation/transformation you will have to set the value to 0 (or in case of scale to 1) after every event, which will return delta values. The examples below all do that.
     </p>
     <h3>Rotation Value</h3>
     <p>
@@ -293,7 +293,7 @@
     </p>
     <h3>View Wrapper</h3>
     <p>
-      Most of the time, you probably want to manipulate the dom objects transformation (ie. position, scale, rotation.) In order to preserve the transformation over events, we need to keep internal states of the position, scale and rotation values. You can do this by using <tt>setAttribute</tt> and <tt>getAttribute</tt>, but JSGestureRecognizer also includes <tt>JSGestureView</tt> which will keep track of transformation properties for you. The JSGestureView object will be accessible as the <tt>view</tt> property of the gesture recognizer instance.
+      Most of the time, you probably want to manipulate the dom object's transformation (ie. position, scale, rotation.) In order to preserve the transformation over events, we need to keep internal states of the position, scale and rotation values. You can do this by using <tt>(set/get)Attribute</tt>, but JSGestureRecognizer also includes <tt>JSGestureView</tt> which will keep track of transformation properties for you. The JSGestureView object will be accessible as the <tt>view</tt> property of the gesture recognizer instance. All examples below use <tt>JSGestureView</tt>.
     </p>
   </section>
   
@@ -403,7 +403,7 @@
       <script type="syntaxhighlighter" class="brush: js"><![CDATA[
         var press = new JSLongPressGestureRecognizer();
         press.initWithCallback(function(sender) {
-          if (sender.state == JSGestureRecognizerStateEnded) {
+          if (sender.state == JSGestureRecognizerStateRecognized) {
             alert('Long Pressed!')
           }
         });

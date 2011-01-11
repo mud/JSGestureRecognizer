@@ -49,76 +49,26 @@ var JSSwipeGestureRecognizerDirectionRight = 1 << 0,
   // class definition using Prototype
   if (Framework.Prototype) {
     
-  } else if (!Framework.Prototype) {
-    // ads Mobile Safari touch properties
-    $.each(['rotation', 'scale', 'touches', 'targetTouches'], function(i, propName){
-      if ( $.inArray(propName, $.event.props) < 0 ) {
+  } else if (Framework.jQuery) {
+    // add Mobile Safari touch properties to event object
+    $.each(['rotation', 'scale', 'touches', 'targetTouches'], function(i, propName) {
+      if ($.inArray(propName, $.event.props) < 0) {
         $.event.props.push(propName);
       }
     });
     Function.prototype.bind = function(context) {
       return jQuery.proxy(this, context);
     }
+  } else {
+    throw new Error("Required Dependency: you need to include either Prototype.js or jQuery.");
   }
   
-  // scope class here so that it doesn't affect Prototype's Class definition.
+  // scope Class here so that it doesn't redefine Prototype's Class definition.
+  // we're using John Resig's class inheritance, which is nice and library independent.
   // http://ejohn.org/blog/simple-javascript-inheritance/
   var Class = function(){};
-  (function(){
-    var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
-    // Create a new Class that inherits from this class
-    Class.extend = function(prop) {
-      var _super = this.prototype;
-
-      // Instantiate a base class (but only create the instance,
-      // don't run the init constructor)
-      initializing = true;
-      var prototype = new this();
-      initializing = false;
-
-      // Copy the properties over onto the new prototype
-      for (var name in prop) {
-        // Check if we're overwriting an existing function
-        prototype[name] = typeof prop[name] == "function" && 
-          typeof _super[name] == "function" && fnTest.test(prop[name]) ?
-          (function(name, fn){
-            return function() {
-              var tmp = this._super;
-
-              // Add a new ._super() method that is the same method
-              // but on the super-class
-              this._super = _super[name];
-
-              // The method only need to be bound temporarily, so we
-              // remove it when we're done executing
-              var ret = fn.apply(this, arguments);        
-              this._super = tmp;
-
-              return ret;
-            };
-          })(name, prop[name]) :
-          prop[name];
-      }
-
-      // The dummy class constructor
-      function Class() {
-        // All construction is actually done in the init method
-        if ( !initializing && this.init )
-          this.init.apply(this, arguments);
-      }
-
-      // Populate our constructed prototype object
-      Class.prototype = prototype;
-
-      // Enforce the constructor to be what we expect
-      Class.constructor = Class;
-
-      // And make this class extendable
-      Class.extend = arguments.callee;
-
-      return Class;
-    };
-  })();// -- Abstract Class: JSGestureRecognizer -------------------------------------
+  (function(){ var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/; Class.extend = function(prop) { var _super = this.prototype; initializing = true; var prototype = new this(); initializing = false; for (var name in prop) { prototype[name] = typeof prop[name] == "function" && typeof _super[name] == "function" && fnTest.test(prop[name]) ? (function(name, fn){ return function() { var tmp = this._super; this._super = _super[name]; var ret = fn.apply(this, arguments); this._super = tmp; return ret; }; })(name, prop[name]) : prop[name]; } function Class() { if ( !initializing && this.init ) this.init.apply(this, arguments); } Class.prototype = prototype; Class.constructor = Class; Class.extend = arguments.callee; return Class; };})();
+// -- Abstract Class: JSGestureRecognizer -------------------------------------
 var JSGestureRecognizer = Class.extend({
   initWithCallback: function(callback) {
     if (typeof callback == 'function') {
@@ -459,6 +409,10 @@ var JSPanGestureRecognizer = JSGestureRecognizer.extend({
       } else {
         this.fire(this.target, JSGestureRecognizerStateChanged, this);
         var p = this.getEventPoint(event);
+        
+        this.velocity.x = p.x - this.translation.x;
+        this.velocity.y = p.y - this.translation.y;
+        
         this.translation.x += p.x - this.translationOrigin.x;
         this.translation.y += p.y - this.translationOrigin.y;
       }
@@ -519,6 +473,7 @@ var JSPinchGestureRecognizer = JSGestureRecognizer.extend({
         this.beganRecognizer = true;
       } else {
         this.fire(this.target, JSGestureRecognizerStateChanged, this);
+        this.velocity = event.scale / this.scale;
         this.scale *= event.scale;
       }
     }
@@ -563,6 +518,7 @@ var JSRotationGestureRecognizer = JSGestureRecognizer.extend({
         this.beganRecognizer = true;
       } else {
         this.fire(this.target, JSGestureRecognizerStateChanged, this);
+        this.velocity = event.rotation - this.rotation;
         this.rotation += event.rotation;
       }
     }

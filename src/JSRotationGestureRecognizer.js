@@ -20,6 +20,7 @@ var JSRotationGestureRecognizer = JSGestureRecognizer.extend({
         this.beganRecognizer = true;
       } else {
         this.fire(this.target, JSGestureRecognizerStateChanged, this);
+        this.velocity = event.rotation - this.rotation;
         this.rotation += event.rotation;
       }
     }

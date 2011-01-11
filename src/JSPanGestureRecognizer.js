@@ -26,6 +26,10 @@ var JSPanGestureRecognizer = JSGestureRecognizer.extend({
       } else {
         this.fire(this.target, JSGestureRecognizerStateChanged, this);
         var p = this.getEventPoint(event);
+        
+        this.velocity.x = p.x - this.translation.x;
+        this.velocity.y = p.y - this.translation.y;
+        
         this.translation.x += p.x - this.translationOrigin.x;
         this.translation.y += p.y - this.translationOrigin.y;
       }
