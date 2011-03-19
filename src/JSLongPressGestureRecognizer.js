@@ -12,7 +12,7 @@ var JSLongPressGestureRecognizer = JSGestureRecognizer.extend({
     if (event.target == this.target) {
       event.preventDefault();
       this._super(event);
-      if (this.numberOfTouchesRequired == event.targetTouches.length) {
+      if (this.numberOfTouchesRequired == event.allTouches().length) {
         this.recognizerTimer = window.setTimeout(function() {
           this.fire(this.target, JSGestureRecognizerStateRecognized, this);
         }.bind(this), this.minimumPressDuration);
@@ -21,7 +21,7 @@ var JSLongPressGestureRecognizer = JSGestureRecognizer.extend({
   },
   
   touchmove: function(event) {
-    if (event.target == this.target) {
+    if (event.target == this.target && MobileSafari) {
       event.preventDefault();
       this.fire(this.target, JSGestureRecognizerStateFailed, this);
     }

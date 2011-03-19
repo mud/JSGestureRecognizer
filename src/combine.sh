@@ -4,6 +4,7 @@ cat ./_header.js > ../dist/gesturerecognizer.js
 cat ./_constants.js >> ../dist/gesturerecognizer.js
 cat ./_begin.js >> ../dist/gesturerecognizer.js
 
+cat ./JSTouchRecognizer.js >> ../dist/gesturerecognizer.js
 cat ./JSGestureRecognizer.js >> ../dist/gesturerecognizer.js
 cat ./JSTapGestureRecognizer.js >> ../dist/gesturerecognizer.js
 cat ./JSLongPressGestureRecognizer.js >> ../dist/gesturerecognizer.js

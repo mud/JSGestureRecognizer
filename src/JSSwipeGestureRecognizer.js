@@ -1,17 +1,19 @@
 var JSSwipeGestureRecognizer = JSGestureRecognizer.extend({
   numberOfTouchesRequired: 1,
   direction:               JSSwipeGestureRecognizerDirectionRight,
+  minimumDistance:         100,
   
   toString: function() {
     return "JSSwipeGestureRecognizer";
   },
   
   touchstart: function(event) {
-    if (event.target == this.target) {
-      if (this.numberOfTouchesRequired == event.targetTouches.length) {
+    var allTouches = event.allTouches();
+    if (event.target == this.target && this.numberOfTouchesRequired == allTouches.length) {
+      if (this.numberOfTouchesRequired == allTouches.length) {
         event.preventDefault();
         this._super(event);
-        this.startingPos = { x: event.targetTouches[0].pageX, y: event.targetTouches[0].pageY };
+        this.startingPos = { x: allTouches[0].pageX, y: allTouches[0].pageY };
         this.distance = { x: 0, y: 0 };
       } else {
         this.fire(this.target, JSGestureRecognizerStateFailed, this);
@@ -22,29 +24,30 @@ var JSSwipeGestureRecognizer = JSGestureRecognizer.extend({
   touchmove: function(event) {
     if (event.target == this.target) {
       event.preventDefault();
-      this.distance.x = event.targetTouches[0].pageX - this.startingPos.x;
-      this.distance.y = event.targetTouches[0].pageY - this.startingPos.y;
+      var allTouches = event.allTouches();
+      this.distance.x = allTouches[0].pageX - this.startingPos.x;
+      this.distance.y = allTouches[0].pageY - this.startingPos.y;
 
       if (this.direction & JSSwipeGestureRecognizerDirectionRight) {
-        if (this.distance.x > 100) {
+        if (this.distance.x > this.minimumDistance) {
           this.fire(this.target, JSGestureRecognizerStateRecognized, this);
         }
       }
 
       if (this.direction & JSSwipeGestureRecognizerDirectionLeft) {
-        if (this.distance.x < -100) {
+        if (this.distance.x < -this.minimumDistance) {
           this.fire(this.target, JSGestureRecognizerStateRecognized, this);
         }
       }
 
       if (this.direction & JSSwipeGestureRecognizerDirectionUp) {
-        if (this.distance.y < -100) {
+        if (this.distance.y < -this.minimumDistance) {
           this.fire(this.target, JSGestureRecognizerStateRecognized, this);
         }
       }
 
       if (this.direction & JSSwipeGestureRecognizerDirectionDown) {
-        if (this.distance.y > 100) {
+        if (this.distance.y > this.minimumDistance) {
           this.fire(this.target, JSGestureRecognizerStateRecognized, this);
         }
       }

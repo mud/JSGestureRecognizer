@@ -9,15 +9,19 @@ var JSPanGestureRecognizer = JSGestureRecognizer.extend({
   touchstart: function(event) {
     if (event.target == this.target) {
       this._super(event);
-      if (event.targetTouches.length > this.maximumNumberOfTouches ||
-          event.targetTouches.length < this.minimumNumberOfTouches) {
+      var allTouches = event.allTouches();
+      if (allTouches.length > this.maximumNumberOfTouches ||
+          allTouches.length < this.minimumNumberOfTouches) {
         this.touchend(event);
+              alert(event.allTouches().length)
       }
     }
   },
   
   touchmove: function(event) {
-    if (event.target == this.target) {
+    var allTouches = event.allTouches();
+    if (event.target == this.target && (allTouches.length >= this.minimumNumberOfTouches &&
+                                        allTouches.length <= this.maximumNumberOfTouches)) {
       event.preventDefault();
       if (this.beganRecognizer == false) {
         this.fire(this.target, JSGestureRecognizerStateBegan, this);
@@ -49,7 +53,8 @@ var JSPanGestureRecognizer = JSGestureRecognizer.extend({
   
   gesturestart: function(event) {
     if (event.target == this.target) {
-      if (event.targetTouches.length > this.maximumNumberOfTouches) {
+      var allTouches = event.allTouches();
+      if (allTouches.length > this.maximumNumberOfTouches) {
         this.fire(this.target, JSGestureRecognizerStateFailed, this);
       }
     }

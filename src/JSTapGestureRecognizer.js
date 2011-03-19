@@ -1,6 +1,7 @@
-var JSTapGestureRecognizer = JSGestureRecognizer.extend({
+var JSTapGestureRecognizer = JSTouchRecognizer.extend({
   numberOfTapsRequired:    1,
   numberOfTouchesRequired: 1,
+  moveTolerance:           40,
   
   toString: function() {
     return "JSTapGestureRecognizer";
@@ -10,15 +11,26 @@ var JSTapGestureRecognizer = JSGestureRecognizer.extend({
     if (event.target == this.target) {
       event.preventDefault();
       this._super(event);
-      this.numberOfTouches = event.targetTouches.length;
+      this.numberOfTouches = event.allTouches().length;
+      this.distance = 0;
+      this.translationOrigin = this.getEventPoint(event);
     }
   },
   
   touchmove: function(event) {
-    if (event.target == this.target) {
+    // move events fire even if there's no move on desktop browsers
+    // the idea of a "tap" with mouse should ignore movement anyway...
+    if (event.target == this.target && MobileSafari) {
       event.preventDefault();
       this.removeObservers();
       this.fire(this.target, JSGestureRecognizerStateFailed, this);
+    }
+    var p = this.getEventPoint(event);
+    var dx = p.x - this.translationOrigin.x,
+        dy = p.y - this.translationOrigin.y;
+    this.distance += Math.sqrt(dx*dx + dy*dy);
+    if (this.distance > this.moveTolerance) {
+      this.touchend(event);
     }
   },
   
@@ -41,6 +53,8 @@ var JSTapGestureRecognizer = JSGestureRecognizer.extend({
       } else {
         this.fire(this.target, JSGestureRecognizerStateFailed, this);
       }
+    } else {
+      this.fire(this.target, JSGestureRecognizerStateFailed, this);
     }
   },
   
