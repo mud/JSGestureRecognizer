@@ -5,7 +5,8 @@ var JSPinchGestureRecognizer = JSGestureRecognizer.extend({
   
   gesturestart: function(event) {
     if (event.target == this.target) {
-      if (event.targetTouches.length == 2) {
+      var allTouches = event.allTouches();
+      if (allTouches.length == 2) {
         event.preventDefault();
         this._super(event);
       }

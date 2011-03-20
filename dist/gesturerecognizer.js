@@ -74,7 +74,7 @@ var JSSwipeGestureRecognizerDirectionRight = 1 << 0,
   (function(){ var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/; Class.extend = function(prop) { var _super = this.prototype; initializing = true; var prototype = new this(); initializing = false; for (var name in prop) { prototype[name] = typeof prop[name] == "function" && typeof _super[name] == "function" && fnTest.test(prop[name]) ? (function(name, fn){ return function() { var tmp = this._super; this._super = _super[name]; var ret = fn.apply(this, arguments); this._super = tmp; return ret; }; })(name, prop[name]) : prop[name]; } function Class() { if ( !initializing && this.init ) this.init.apply(this, arguments); } Class.prototype = prototype; Class.constructor = Class; Class.extend = arguments.callee; return Class; };})();
 
   // -- Event extension -------------------------------------------------------
-  if (typeof Event.prototype.targetTouches == 'undefined') {
+  if (!MobileSafari) {
     Event.prototype.allTouches = function() {
       var touches = [this];
       if (this.altKey) {
@@ -480,15 +480,20 @@ var JSPanGestureRecognizer = JSGestureRecognizer.extend({
       if (allTouches.length > this.maximumNumberOfTouches ||
           allTouches.length < this.minimumNumberOfTouches) {
         this.touchend(event);
-              alert(event.allTouches().length)
       }
     }
   },
   
   touchmove: function(event) {
     var allTouches = event.allTouches();
-    if (event.target == this.target && (allTouches.length >= this.minimumNumberOfTouches &&
-                                        allTouches.length <= this.maximumNumberOfTouches)) {
+    if (allTouches.length >= this.minimumNumberOfTouches &&
+        allTouches.length <= this.maximumNumberOfTouches) {
+      if (MobileSafari) {
+        if (event.target != this.target) {
+          this.touchend(event);
+          return;
+        }
+      }
       event.preventDefault();
       if (this.beganRecognizer == false) {
         this.fire(this.target, JSGestureRecognizerStateBegan, this);
@@ -547,7 +552,8 @@ var JSPinchGestureRecognizer = JSGestureRecognizer.extend({
   
   gesturestart: function(event) {
     if (event.target == this.target) {
-      if (event.targetTouches.length == 2) {
+      var allTouches = event.allTouches();
+      if (allTouches.length == 2) {
         event.preventDefault();
         this._super(event);
       }
@@ -592,7 +598,8 @@ var JSRotationGestureRecognizer = JSGestureRecognizer.extend({
   
   gesturestart: function(event) {
     if (event.target == this.target) {
-      if (event.targetTouches.length == 2) {
+      var allTouches = event.allTouches();
+      if (allTouches.length == 2) {
         event.preventDefault();
         this._super(event);
       }
@@ -701,11 +708,11 @@ var JSGestureView = Class.extend({
   },
   
   setTransform: function(obj) {
-    this._x = (obj.x || this._x || this.x);
-    this._y = (obj.y || this._y || this.y);
-    this._z = (obj.z || this._z || this.z);
-    this._scale = (obj.scale || this._scale || this.scale);
-    this._rotation = (obj.rotation || this._rotation || this.rotation);
+    this._x        = this.getDefined(obj.x,        this._x,        this.x);
+    this._y        = this.getDefined(obj.y,        this._y,        this.y);
+    this._z        = this.getDefined(obj.z,        this._z,        this.z);
+    this._scale    = this.getDefined(obj.scale,    this._scale,    this.scale);
+    this._rotation = this.getDefined(obj.rotation, this._rotation, this.rotation);
     this.view.style.webkitTransform = 'translate3d('+
       this._x+'px, '+this._y+'px, '+this._z+') '+
       'scale('+this._scale+') '+
@@ -714,6 +721,13 @@ var JSGestureView = Class.extend({
   
   addGestureRecognizer: function(recognizer) {
     JSTouchRecognizer.addGestureRecognizer(this, recognizer);
+  },
+  
+  getDefined: function() {
+    for (var i = 0; i < arguments.length; i++) {
+      if (typeof arguments[i] != 'undefined') return arguments[i];
+    }
+    return arguments[arguments.length-1];
   }
 });
 

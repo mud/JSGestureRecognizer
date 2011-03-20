@@ -13,15 +13,20 @@ var JSPanGestureRecognizer = JSGestureRecognizer.extend({
       if (allTouches.length > this.maximumNumberOfTouches ||
           allTouches.length < this.minimumNumberOfTouches) {
         this.touchend(event);
-              alert(event.allTouches().length)
       }
     }
   },
   
   touchmove: function(event) {
     var allTouches = event.allTouches();
-    if (event.target == this.target && (allTouches.length >= this.minimumNumberOfTouches &&
-                                        allTouches.length <= this.maximumNumberOfTouches)) {
+    if (allTouches.length >= this.minimumNumberOfTouches &&
+        allTouches.length <= this.maximumNumberOfTouches) {
+      if (MobileSafari) {
+        if (event.target != this.target) {
+          this.touchend(event);
+          return;
+        }
+      }
       event.preventDefault();
       if (this.beganRecognizer == false) {
         this.fire(this.target, JSGestureRecognizerStateBegan, this);
