@@ -46,7 +46,7 @@ var JSPanGestureRecognizer = JSGestureRecognizer.extend({
   },
   
   touchend: function(event) {
-    if (event.target == this.target) {
+    if (event.target == this.target || !MobileSafari) {
       this._super(event);
       if (this.beganRecognizer) {
         this.fire(this.target, JSGestureRecognizerStateEnded, this);
