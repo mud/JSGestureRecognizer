@@ -27,7 +27,8 @@ var JSTouchStart     = 'touchstart',
 var JSSwipeGestureRecognizerDirectionRight = 1 << 0,
     JSSwipeGestureRecognizerDirectionLeft  = 1 << 1,
     JSSwipeGestureRecognizerDirectionUp    = 1 << 2,
-    JSSwipeGestureRecognizerDirectionDown  = 1 << 3;(function(w) {
+    JSSwipeGestureRecognizerDirectionDown  = 1 << 3;
+(function(w) {
   
   var MobileSafari = (function() {
     return /Apple.*Mobile/.test(navigator.userAgent);
@@ -92,7 +93,8 @@ var JSSwipeGestureRecognizerDirectionRight = 1 << 0,
     Event.prototype.allTouches = allTouches;
   } else {
     jQuery.extend(jQuery.Event.prototype, { allTouches: allTouches });
-  }// -- Abstract Class: JSTouchRecognizer -------------------------------------
+  }
+// -- Abstract Class: JSTouchRecognizer -------------------------------------
 var JSTouchRecognizer = Class.extend({
   initWithCallback: function(callback) {
     if (typeof callback == 'function') {
@@ -386,7 +388,7 @@ var JSTapGestureRecognizer = JSTouchRecognizer.extend({
         dy = p.y - this.translationOrigin.y;
     this.distance += Math.sqrt(dx*dx + dy*dy);
     if (this.distance > this.moveTolerance) {
-      this.touchend(event);
+      this.touchend();
     }
   },
   
@@ -745,6 +747,6 @@ var JSGestureView = Class.extend({
   w.JSSwipeGestureRecognizer     = JSSwipeGestureRecognizer;
   w.JSTapGestureRecognizer       = JSTapGestureRecognizer;
   
-  w.JSGestureView       = JSGestureView;
+  w.JSGestureView                = JSGestureView;
 
 })(window);

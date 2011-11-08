@@ -7,6 +7,6 @@
   w.JSSwipeGestureRecognizer     = JSSwipeGestureRecognizer;
   w.JSTapGestureRecognizer       = JSTapGestureRecognizer;
   
-  w.JSGestureView       = JSGestureView;
+  w.JSGestureView                = JSGestureView;
 
 })(window);

@@ -30,7 +30,7 @@ var JSTapGestureRecognizer = JSTouchRecognizer.extend({
         dy = p.y - this.translationOrigin.y;
     this.distance += Math.sqrt(dx*dx + dy*dy);
     if (this.distance > this.moveTolerance) {
-      this.touchend(event);
+      this.touchend();
     }
   },
   
