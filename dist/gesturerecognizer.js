@@ -378,7 +378,7 @@ var JSTapGestureRecognizer = JSTouchRecognizer.extend({
   touchmove: function(event) {
     // move events fire even if there's no move on desktop browsers
     // the idea of a "tap" with mouse should ignore movement anyway...
-    if (event.target == this.target && MobileSafari) {
+    if (event.target == this.target && !MobileSafari) {
       event.preventDefault();
       this.removeObservers();
       this.fire(this.target, JSGestureRecognizerStateFailed, this);
@@ -393,7 +393,7 @@ var JSTapGestureRecognizer = JSTouchRecognizer.extend({
   },
   
   touchend: function(event) {
-    if (event.target == this.target) {
+    if (event && event.target == this.target) {
       if (this.numberOfTouches == this.numberOfTouchesRequired) {
         this._super(event);
         this.taps++;
@@ -645,7 +645,7 @@ var JSRotationGestureRecognizer = JSGestureRecognizer.extend({
     }
   }
 });
-var JSSwipeGestureRecognizer = JSGestureRecognizer.extend({
+var JSSwipeGestureRecognizer = JSTouchRecognizer.extend({
   numberOfTouchesRequired: 1,
   direction:               JSSwipeGestureRecognizerDirectionRight,
   minimumDistance:         100,
@@ -656,7 +656,7 @@ var JSSwipeGestureRecognizer = JSGestureRecognizer.extend({
   
   touchstart: function(event) {
     var allTouches = event.allTouches();
-    if (event.target == this.target && this.numberOfTouchesRequired == allTouches.length) {
+    if (event.target == this.target) {
       if (this.numberOfTouchesRequired == allTouches.length) {
         event.preventDefault();
         this._super(event);
@@ -669,7 +669,8 @@ var JSSwipeGestureRecognizer = JSGestureRecognizer.extend({
   },
   
   touchmove: function(event) {
-    if (event.target == this.target) {
+    var allTouches = event.allTouches();
+    if (event.target == this.target && this.numberOfTouchesRequired == allTouches.length) {
       event.preventDefault();
       var allTouches = event.allTouches();
       this.distance.x = allTouches[0].pageX - this.startingPos.x;
@@ -698,6 +699,8 @@ var JSSwipeGestureRecognizer = JSGestureRecognizer.extend({
           this.fire(this.target, JSGestureRecognizerStateRecognized, this);
         }
       }
+    } else {
+      this.fire(this.target, JSGestureRecognizerStateFailed, this);
     }
   },
   
